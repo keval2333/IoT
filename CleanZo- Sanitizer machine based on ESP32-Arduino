@@ -5,33 +5,47 @@
 double sensorValue = 0.0;
 double dist = 0.0;
 int inputPin = 34;
-int DC_motor = 25;
+int DC_motor = 27;
+int lmSensor = 35;
+float temp;
+
 void setup() 
 {
   Serial.begin(9600);
   pinMode(inputPin , INPUT);
   pinMode(DC_motor, OUTPUT);
+  pinMode(2, OUTPUT);
+  Serial.println("CLEARDATA");
+  Serial.println("LABEL,Current time,Temperature in *F");
 }
 
 void loop() 
 {
   sensorValue = analogRead(inputPin);
   distance();
-  if(dist<4)
+  
+  if(dist<5)
   {
-    Serial.print("DC MOTOR IS ON");
-    Serial.print('\n');
+    temp = analogRead(lmSensor);
+    temperature();
+    Serial.print("DATA,TIME,");
+    Serial.println(temp);
     digitalWrite(DC_motor, HIGH);
+    digitalWrite(2, HIGH);
   }
  else
  {
-   Serial.print("DC MOTOR IS OFF");
-   Serial.print('\n');
    digitalWrite(DC_motor, LOW);
+   digitalWrite(2, LOW);
  }
+ 
 }
 void distance()
 {
    sensorValue *= 0.0049;
    dist = 3*pow(( sensorValue -3),4);
+}
+void temperature()
+{
+   temp = (temp*5.0 / 1024)*100 - 40;
 }
